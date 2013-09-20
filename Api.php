@@ -5,7 +5,7 @@
  *
  * @version 1.0
  */
-class API
+class Diablo3API
 {
 
     private $hero;
