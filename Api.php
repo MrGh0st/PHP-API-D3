@@ -51,8 +51,9 @@ class Diablo3API
     {
 	if ($this->validate_Battletag($battletag)) {
 	    $battletag = str_replace(" ", "", $battletag);
-	    preg_match('/^(\D+)#(\d+)$/', $battletag, $tmp);
+	    preg_match('/^(.+)#(\d+)$/', $battletag, $tmp);
 	    $this->battletag = $tmp[1] . '-' . $tmp[2];
+	    echo $this->battletag;
 	    return true;
 	} else {
 	    return false;
@@ -61,8 +62,7 @@ class Diablo3API
 
     /**
      * @desc Set server to connect
-     * Possible server: america, europe, taiwan, korea, china
-     * @param type $server
+     * @param type $server Servers: america, europe, taiwan, korea, china
      * @return boolean True if server is set.
      */
     public function set_Server($server)
@@ -81,7 +81,7 @@ class Diablo3API
      */
     public function download_Profile()
     {
-	if (!$this->battletag || !$this->locale) {
+	if (!$this->battletag || !$this->local) {
 	    return false;
 	}
 	if(!($this->profile = $this->download('profile/' . $this->battletag . '/'))){
@@ -97,7 +97,7 @@ class Diablo3API
      */
     public function download_Hero($hero)
     {
-	if (!$this->battletag || !$this->locale) {
+	if (!$this->battletag || !$this->local) {
 	    return false;
 	}
 	if(!($this->hero = $this->download('profile/' . $this->battletag . '/hero/' . $hero))){
@@ -113,7 +113,7 @@ class Diablo3API
      */
     public function download_Item($item)
     {
-	if (!$this->locale) {
+	if (!$this->local) {
 	    return false;
 	}
 	if(!($this->item = $this->download('data/item/' . $item))){
@@ -124,8 +124,7 @@ class Diablo3API
 
     /**
      * @desc Download and decode (json) follower, then save it to $follower
-     * 	Followers: enchantress,templar,scoundrel
-     * @param $follower string
+     * @param $follower string Followers: enchantress,templar,scoundrel
      * @return boolean 
      */
     public function download_Follower($follower)
@@ -140,9 +139,8 @@ class Diablo3API
     }
 
     /**
-     * @desc Download and decode (json) artisan, then save it to $artisan
-     * 	Artisans: blacksmith,jeweler
-     * @param $artisan string
+     * @desc Download and decode (json) artisan, then save it to $artisan,
+     * @param $artisan string Artisans: blacksmith,jeweler
      * @return boolean 
      */
     public function download_Artisan($artisan)
