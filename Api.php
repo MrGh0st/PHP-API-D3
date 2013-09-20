@@ -70,7 +70,7 @@ class Diablo3API
 	if (!array_key_exists($server, $this->locales)) {
 	    return false;
 	} else {
-	    $this->local = $this->locales[$this->server];
+	    $this->local = $this->locales[$server];
 	    return true;
 	}
     }
@@ -81,13 +81,12 @@ class Diablo3API
      */
     public function download_Profile()
     {
-	if (!$this->battletag && !$this->locale) {
+	if (!$this->battletag || !$this->locale) {
 	    return false;
 	}
-	$curl = curl_init($this->local . '.battle.net/api/d3/profile/' . $$this->battletag . '/');
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$this->profile = json_decode(curl_exec($curl));
-	curl_close($curl);
+	if(!($this->profile = $this->download('profile/' . $this->battletag . '/'))){
+	    return false;
+	}
 	return true;
     }
 
@@ -98,13 +97,12 @@ class Diablo3API
      */
     public function download_Hero($hero)
     {
-	if (!$this->battletag && !$this->locale) {
+	if (!$this->battletag || !$this->locale) {
 	    return false;
 	}
-	$curl = curl_init($this->locale . '.battle.net/api/d3/profile/' . $this->battletag . '/hero/' . $hero . '/');
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$this->hero = json_decode(curl_exec($curl));
-	curl_close($curl);
+	if(!($this->hero = $this->download('profile/' . $this->battletag . '/hero/' . $hero))){
+	    return false;
+	}
 	return true;
     }
 
@@ -118,47 +116,63 @@ class Diablo3API
 	if (!$this->locale) {
 	    return false;
 	}
-	$curl = curl_init($this->locale . '.battle.net/api/d3/data/item/' . $item . '/');
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$this->item = json_decode(curl_exec($curl));
-	curl_close($curl);
+	if(!($this->item = $this->download('data/item/' . $item))){
+	    return false;
+	}
 	return true;
     }
 
     /**
      * @desc Download and decode (json) follower, then save it to $follower
+     * 	Followers: enchantress,templar,scoundrel
      * @param $follower string
      * @return boolean 
      */
     public function download_Follower($follower)
     {
-	if (!$this->locale && (in_array($follower, $this->followers))) {
+	if ((!$this->locale) || (!in_array($follower, $this->followers))) {
 	    return false;
 	}
-	$curl = curl_init($this->locale . '.battle.net/api/d3/data/follower/' . $follower . '/');
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$this->follower = json_decode(curl_exec($curl));
-	curl_close($curl);
+	if(!($this->follower = $this->download('data/follower/'.$follower))){
+	    return false;
+	}	
 	return true;
     }
 
     /**
      * @desc Download and decode (json) artisan, then save it to $artisan
+     * 	Artisans: blacksmith,jeweler
      * @param $artisan string
      * @return boolean 
      */
     public function download_Artisan($artisan)
     {
-	if ((in_array($artisan, $this->artisans)) && !$this->locale) {
+	if ((!in_array($artisan, $this->artisans)) || (!$this->local)) {
 	    return false;
 	}
-	$curl = curl_init($this->locale . '.battle.net/api/d3/data/artisan/' . $artisan . '/');
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$this->artisan = json_decode(curl_exec($curl));
-	curl_close($curl);
+	if(!($this->artisan = $this->download('data/artisan/'.$artisan))){
+	    return false;
+	}
 	return true;
     }
 
+    /**
+     * @desc Using cURL to get content or false if failed.
+     * @param string $url
+     * @return array/boolean
+     */
+    private function download($url)
+    {
+	$tmp = $this->local .'.battle.net/api/d3/'.$url.'';
+	$curl = curl_init($tmp);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$return = curl_exec($curl);
+	if($return){
+	    $return = json_decode($return);
+	    curl_close($curl);
+	}
+	return $return;
+    }
     public function get_Profile()
     {
 	return $this->profile;
