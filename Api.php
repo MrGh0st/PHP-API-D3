@@ -3,7 +3,7 @@
 /**
  * @author Michał Świtalik <michal.switalik@gmail.com>
  *
- * @version 1.0
+ * @version 1.1
  */
 class Diablo3API
 {
