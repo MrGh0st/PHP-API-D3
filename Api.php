@@ -53,7 +53,6 @@ class Diablo3API
 	    $battletag = str_replace(" ", "", $battletag);
 	    preg_match('/^(.+)#(\d+)$/', $battletag, $tmp);
 	    $this->battletag = $tmp[1] . '-' . $tmp[2];
-	    echo $this->battletag;
 	    return true;
 	} else {
 	    return false;
