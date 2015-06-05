@@ -1,6 +1,6 @@
 <?php
 
-include 'libs/Api.php';
+include 'Api.php';
 $api = new Diablo3API;
 $api->set_Server('europe');
 $api->download_Artisan('jeweler');
